@@ -1,9 +1,10 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {% block content %}
+<h3>Pages</h3>
+<hr>
+<ul class="list-unstyled">
+    {% for title in titles %}
+    <li><a href="http://localhost:3000/wiki/{{title}}">{{title}}</a></li>
+    {% endfor %}
 
-{% block content %}
-  <h3>Pages</h3>
-  <hr>
-  <ul class="list-unstyled">
-    <!-- PLACEHOLDER LIST OF PAGES -->
-  </ul>
+</ul>
 {% endblock %}

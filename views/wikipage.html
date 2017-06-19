@@ -1,9 +1,11 @@
  {% extends "layout.html" %} {% block content %}
-<h3>{{title}} <small> (<a href="PLACEHOLDER_URL_TITLE/similar">Similar</a>)</small></h3>
-<h4>by <a href="PLACEHOLDER-AUTHOR-URL">PLACEHOLDER AUTHOR NAME</a></h4>
-<div>PLACEHOLDER TAG LIST</div>
+<h3>{{page.title}} <small> (<a href="PLACEHOLDER_URL_TITLE/similar">Similar</a>)</small></h3>
+<h4>by <a href="http://localhost:3000/users/{{page.author.id}}">{{page.author.name}}</a></h4>
+<div>
+    <h5>{{tagsplaceholder}}</h5>
+</div>
 <hr/>
-<div>PLACEHOLDER AUTHOR NAME WITH LINK TO AUTHOR PAGE</div>
+<div><a href="http://localhost:3000/users/{{page.author.id}}">{{page.author.name}}</a></div>
 <div class="page-body">{{content}}</div>
 <hr/>
 <a href="PLACEHOLDER_URL_TITLE/edit" class="btn btn-primary">edit this page</a>

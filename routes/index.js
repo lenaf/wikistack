@@ -10,3 +10,6 @@ module.exports = router;
 
 router.use('/wiki', wikiRouter);
 //router.use('/users', userRouter);
+
+router.use('/users', userRouter);
+//router.use('/users', userRouter);

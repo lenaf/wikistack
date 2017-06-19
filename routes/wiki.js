@@ -9,12 +9,21 @@ var models = require('../models');
 var Page = models.Page; // page table/model
 var User = models.User; //user table/model
 
-// in case we go to /wiki, redirect to /
 
+// set /wiki homepage
 router.get('/', function(req, res, next) {
-    res.redirect('/');
-    next();
-});
+    Page.findAll()
+        .then(function(pages) {
+            var pageTitles = []
+            for (var i = 0; i < pages.length; i++) {
+                pageTitles.push(pages[i].dataValues.title)
+            }
+            res.render('index', { titles: pageTitles })
+
+        })
+        .catch(next)
+})
+
 
 // render the add page htm for /wiki/add
 
@@ -23,17 +32,34 @@ router.get('/add', function(req, res, next) {
     next();
 });
 
+
 // capture the field input when submitted
 
 router.post('/', function(req, res, next) {
-    var page = Page.build({
-        title: req.body.title,
-        content: req.body.content
-    });
-    page.save()
-        .then(function(savedPage) {
-            res.redirect(savedPage.route);
-        }).catch(next);
+    User.findOrCreate({
+            where: {
+                name: req.body.authorName,
+                email: req.body.authorEmail
+            }
+        })
+        .then(function(values) {
+
+            var user = values[0];
+
+            var page = Page.build({
+                title: req.body.title,
+                content: req.body.content
+            });
+
+            return page.save().then(function(page) {
+                return page.setAuthor(user);
+            });
+
+        })
+        .then(function(page) {
+            res.redirect(page.route);
+        })
+        .catch(next);
 });
 
 //route for getting specific wikipage
@@ -42,14 +68,36 @@ router.get('/:urlTitle', function(req, res, next) {
     Page.findOne({
             where: {
                 urlTitle: req.params.urlTitle
-            }
+            },
+            include: [
+                { model: User, as: 'author' }
+            ]
         })
         .then(function(page) {
-            console.log('page', page)
-            res.render('wikipage', page.dataValues);
+            // page instance will have a .author property
+            // as a filled in user object ({ name, email })
+            if (page === null) {
+                res.status(404).send();
+            } else {
+                console.log('page', page)
+                res.render('wikipage', {
+                    page: page
+                });
+            }
         })
         .catch(next);
+    next();
 })
+
+
+
+//get wiki searchpage
+
+router.get('/search', function(req, res) {
+    res.render('search')
+});
+
+
 
 // export my routes
 module.exports = router;
